@@ -54,6 +54,7 @@ public class Knoten {
 		return "KnotenID: " + id;
 	}
 	
+	//Knoten sind bei gleicher ID gleich
 	@Override
 	public boolean equals(Object o) {
 		if(o == this) {
