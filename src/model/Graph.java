@@ -19,10 +19,10 @@ public class Graph {
 	private List<Knoten> knoten;
 
 	// Methoden
-	
-	//finde Anzahl an Zyklen
+
+	// finde Anzahl an Zyklen
 	public int findeZyklen() {
-		
+
 		return 0;
 	}
 
@@ -94,18 +94,18 @@ public class Graph {
 	public void addKnoten(Knoten k) {
 		this.knoten.add(k);
 	}
-	
+
 	public Knoten getKnoten(Knoten k) {
-		for(Knoten s : this.knoten) {
-			if(s.equals(k)) {
+		for (Knoten s : this.knoten) {
+			if (s.equals(k)) {
 				return s;
 			}
 		}
 		return null;
 	}
-	
+
 	public boolean remove(Knoten k) {
-		for(Knoten k1 : this.knoten) {
+		for (Knoten k1 : this.knoten) {
 			k1.removeKanteTo(k);
 		}
 		return this.knoten.remove(k);
