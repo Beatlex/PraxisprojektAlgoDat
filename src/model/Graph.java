@@ -7,19 +7,27 @@ import java.util.List;
 
 public class Graph {
 	/*
-	 * Graph gerichtet, ungewichtet. Veränderbar
-	 */
-
+	* Graph gerichtet, ungewichtet. Verï¿½nderbar
+	*/
+	
 	// Konstruktoren
 	public Graph() {
 		knoten = new LinkedList<>();
 	}
-
+	
 	// Variablen
 	private List<Knoten> knoten;
-
+	
 	// Methoden
-
+	
+		public List<Knoten> getKnoten() {
+			return knoten;
+		}
+	
+		public void setKnoten(List<Knoten> knoten) {
+			this.knoten = knoten;
+		}
+	
 	// finde Anzahl an Zyklen
 	public int findeZyklen() {
 
@@ -51,11 +59,11 @@ public class Graph {
 //		System.out.println(fileInhalt);
 
 		while (true) {
-			// Abbruchbedingung für das Einlesen
+			// Abbruchbedingung fï¿½r das Einlesen
 			if (fileInhalt.length() <= 1) {
 				break;
 			}
-			// führendes , entfernen
+			// fï¿½hrendes , entfernen
 			if (fileInhalt.charAt(0) == ',') {
 				fileInhalt = fileInhalt.substring(1);
 			}
@@ -90,7 +98,7 @@ public class Graph {
 		return graph;
 	}
 
-	// Methode um Knoten einfügen zu können
+	// Methode um Knoten einfï¿½gen zu kï¿½nnen
 	public void addKnoten(Knoten k) {
 		this.knoten.add(k);
 	}
