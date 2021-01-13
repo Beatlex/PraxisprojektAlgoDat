@@ -6,5 +6,8 @@ public class ModelTest {
 		Graph g = Graph.fromFile("GraphOhneZyklus.txt");
 		System.out.println("Graph dargestellt:");
 		System.out.println(g);
+
+		System.out.println("SubGraph dargestellt:");
+		System.out.println(Graph.createSubGraph(3, g));
 	}
 }

@@ -97,7 +97,7 @@ public class Graph {
 						knotenNeu.addKanteTo(new Knoten(child.getId()));
 					}
 				}
-				subGraph.addKnoten(knoten);
+				subGraph.addKnoten(knotenNeu);
             }
         }
         return subGraph;
