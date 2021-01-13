@@ -86,6 +86,23 @@ public class Graph {
 		return g;
 	}
 
+	// return a subgraph, that only includes nodes with ids greater than startKnoten
+	public static Graph createSubGraph(long startKnoten, Graph graph) {
+        Graph subGraph = new Graph();
+        for (Knoten knoten : graph.getKnoten()) {
+            if(knoten.getId() >= startKnoten){
+                Knoten knotenNeu = new Knoten(knoten.getId());
+                for (Knoten child : knoten.getVerbundeneKnoten()) {
+					if(child.getId() >= startKnoten){
+						knotenNeu.addKanteTo(new Knoten(child.getId()));
+					}
+				}
+				subGraph.addKnoten(knoten);
+            }
+        }
+        return subGraph;
+    }
+
 	// Die toString methode um den Graphen darzustellen
 	@Override
 	public String toString() {
@@ -118,5 +135,4 @@ public class Graph {
 		}
 		return this.knoten.remove(k);
 	}
-
 }
