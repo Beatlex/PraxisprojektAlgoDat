@@ -2,8 +2,12 @@ package model;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+
+import javax.swing.text.AsyncBoxView.ChildLocator;
 
 public class Graph {
 	/*
@@ -20,13 +24,26 @@ public class Graph {
 	
 	// Methoden
 	
-		public List<Knoten> getKnoten() {
-			return knoten;
+	public Graph clone(){
+		Graph clone = new Graph();
+		for (Knoten k : this.knoten) {
+			clone.addKnoten(new Knoten(k.getId()));
 		}
-	
-		public void setKnoten(List<Knoten> knoten) {
-			this.knoten = knoten;
+		for (Knoten k : this.knoten) {
+			for (Knoten child : k.getVerbundeneKnoten()) {
+				clone.getKnoten(k.getId()).addKanteTo(clone.getKnoten(child.getId()));
+			}
 		}
+		return clone;
+	}
+
+	public List<Knoten> getKnoten() {
+		return knoten;
+	}
+
+	public void setKnoten(List<Knoten> knoten) {
+		this.knoten = knoten;
+	}
 	
 	// finde Anzahl an Zyklen
 	public int findeZyklen() {
@@ -86,22 +103,28 @@ public class Graph {
 		return g;
 	}
 
-	// return a subgraph, that only includes nodes with ids greater than startKnoten
+	// creates a subgraph, that only includes nodes with ids greater than startKnoten
 	public static Graph createSubGraph(long startKnoten, Graph graph) {
-        Graph subGraph = new Graph();
-        for (Knoten knoten : graph.getKnoten()) {
-            if(knoten.getId() >= startKnoten){
-                Knoten knotenNeu = new Knoten(knoten.getId());
-                for (Knoten child : knoten.getVerbundeneKnoten()) {
-					if(child.getId() >= startKnoten){
-						knotenNeu.addKanteTo(new Knoten(child.getId()));
-					}
-				}
-				subGraph.addKnoten(knotenNeu);
-            }
-        }
-        return subGraph;
-    }
+		Graph subGraph = graph.clone();
+		for (Knoten k : subGraph.getKnoten()) {
+			if(k.getId() < startKnoten){
+				subGraph.remove(k);
+			}
+		}
+		return subGraph;
+	}
+	
+	//creates a subGraph, that only contains nodes, that are in knotenSet
+	public static Graph createSubGraph(Set<Knoten> knotenSet, Graph graph){
+		Graph subGraph = graph.clone();
+		for (Knoten knoten : graph.getKnoten()) {
+			if(!knotenSet.contains(knoten)){
+				//remove node from the subGraph
+				subGraph.remove(knoten.getId());
+			}
+		}
+		return subGraph;
+	}
 
 	// Die toString methode um den Graphen darzustellen
 	@Override
@@ -129,10 +152,23 @@ public class Graph {
 		return null;
 	}
 
+	public Knoten getKnoten(int id) {
+		for (Knoten k : this.knoten) {
+			if (k.getId() == id) {
+				return k;
+			}
+		}
+		return null;
+	}
+
 	public boolean remove(Knoten k) {
 		for (Knoten k1 : this.knoten) {
 			k1.removeKanteTo(k);
 		}
 		return this.knoten.remove(k);
+	}
+
+	public boolean remove(int id) {
+		return remove(getKnoten(id));
 	}
 }

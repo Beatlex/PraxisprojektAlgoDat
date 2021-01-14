@@ -51,53 +51,53 @@ public class TarjanStronglyConnectedComponent {
         result = new ArrayList<>();
 
         //start from any node in the graph.
-        for (Knoten Knoten : graph.getKnoten()) {
-            if(!visited.contains(Knoten)) {
-                sccUtil(Knoten);
+        for (Knoten knoten : graph.getKnoten()) {
+            if(!visited.contains(knoten)) {
+                sccUtil(knoten);
             }
         }
 
         return result;
     }
 
-    private void sccUtil(Knoten Knoten) {
+    private void sccUtil(Knoten knoten) {
 
-        visited.add(Knoten);
-        indices.put(Knoten, index);
-        lowLink.put(Knoten, index);
+        visited.add(knoten);
+        indices.put(knoten, index);
+        lowLink.put(knoten, index);
         index++;
-        stack.push(Knoten);
+        stack.push(knoten);
         // stack.addFirst(Knoten);
-        onStack.add(Knoten);
+        onStack.add(knoten);
 
-        for (Knoten child : Knoten.getVerbundeneKnoten()) {
+        for (Knoten child : knoten.getVerbundeneKnoten()) {
             //if child is not visited then visit it and see if it has link back to node's ancestor. In that case update
             //lowLink to ancestor's index
             // --> DFS until a visited node is hit 
             if (!visited.contains(child)) {
                 sccUtil(child);
                 //updates lowLink[Knoten] = min(lowLink[Knoten], lowLink[child]);
-                lowLink.put(Knoten, Math.min(lowLink.get(Knoten), lowLink.get(child)));
+                lowLink.put(knoten, Math.min(lowLink.get(knoten), lowLink.get(child)));
             } //if child is on stack then see if its index is lower than node's lowLink. If yes then update node's lowLink to that.
             else if (onStack.contains(child)) {
                 //If child is not on stack, then th edge to child is pointing to an SCC already found and must be ignored
                 //DFS found a leaf/end --> "backtrack" one step and update lowLink value
                 //updates lowLink[Knoten] = min(lowLink[Knoten], indices[child]);
-                lowLink.put(Knoten, Math.min(lowLink.get(Knoten), indices.get(child)));
+                lowLink.put(knoten, Math.min(lowLink.get(knoten), indices.get(child)));
             }
         }
 
         //End of DFS:
         //if nodes lowLink value is the same as index then this is the root node for a strongly connected component.
         //keep popping node out of stack until you find the current node. They are all part of one strongly connected component.
-        if (indices.get(Knoten) == lowLink.get(Knoten)) {
+        if (indices.get(knoten) == lowLink.get(knoten)) {
             Set<Knoten> stronglyConnectedComponenet = new HashSet<>();
             Knoten v;
             do {
-                v = stack.pollFirst();  // pollFirst() analogue to pop(), but throws no exception
+                v = stack.pollFirst();  // pollFirst() is analogue to pop(), but throws no exception
                 onStack.remove(v);
                 stronglyConnectedComponenet.add(v);
-            } while (!Knoten.equals(v));
+            } while (!knoten.equals(v));
             result.add(stronglyConnectedComponenet);
         }
     }
