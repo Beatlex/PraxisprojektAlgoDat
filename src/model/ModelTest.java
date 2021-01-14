@@ -7,13 +7,31 @@ import zyklusFinder.AllCyclesInDirectedGraphJohnson;
 public class ModelTest {
 	public static void main(String[] args) {
 //		Graph g = Graph.fromFile("graph1Test.txt");
-		Graph g = Graph.fromFile("GraphDreiZyklen.txt");
-		System.out.println("Graph dargestellt:");
-		System.out.println(g);
+		String[] alleFiles = {	"GraphOhneZyklus.txt",
+								"GraphEinZyklus.txt",
+								"GraphZweiZyklen.txt",
+								"GraphDreiZyklen.txt",
+								"BeispielGraphAlsGerichtet.txt",
+								"GraphVideo.txt"
+		};
+		//Über alle Testgraphen iterieren und Ergebnisse ausgeben
+		for(String s : alleFiles) {
+			Graph g = Graph.fromFile(s);
+			System.out.println("Graph von: " + s);
+			System.out.println(g);
+			AllCyclesInDirectedGraphJohnson johnson = new AllCyclesInDirectedGraphJohnson();
+			List<List<Knoten>> cycles = johnson.simpleCyles(g);
+			System.out.println("Anzahl an Zyklen:");
+			System.out.println(cycles.size());
 
-		AllCyclesInDirectedGraphJohnson johnson = new AllCyclesInDirectedGraphJohnson();
-		List<List<Knoten>> cycles = johnson.simpleCyles(g);
-		System.out.println(cycles.size());
+		}
+//		Graph g = Graph.fromFile("GraphDreiZyklen.txt");
+//		System.out.println("Graph dargestellt:");
+//		System.out.println(g);
+//
+//		AllCyclesInDirectedGraphJohnson johnson = new AllCyclesInDirectedGraphJohnson();
+//		List<List<Knoten>> cycles = johnson.simpleCyles(g);
+//		System.out.println(cycles.size());
 
 		// System.out.println("SubGraph dargestellt:");
 		// System.out.println(Graph.createSubGraph(3, g));

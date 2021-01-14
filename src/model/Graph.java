@@ -24,7 +24,7 @@ public class Graph {
 	private List<Knoten> knoten;
 	
 	// Methoden
-	
+	//Methode um Graph sauber zu clonen.
 	public Graph clone(){
 		Graph clone = new Graph();
 		for (Knoten k : this.knoten) {
@@ -46,11 +46,11 @@ public class Graph {
 		this.knoten = knoten;
 	}
 	
-	// finde Anzahl an Zyklen
-	public int findeZyklen() {
-
-		return 0;
-	}
+	// finde Anzahl an Zyklen. wurde anders Implementiert
+//	public int findeZyklen() {
+//
+//		return 0;
+//	}
 
 	// static
 	public static Graph fromFile(String file) {
