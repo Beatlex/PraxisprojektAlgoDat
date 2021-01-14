@@ -3,6 +3,7 @@ package model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -85,15 +86,23 @@ public class Graph {
 				fileInhalt = fileInhalt.substring(1);
 			}
 			// Ausgangsknoten einlesen
-			String k1 = fileInhalt.substring(0, fileInhalt.indexOf("{"));
+			int kId = Integer.valueOf(fileInhalt.substring(0, fileInhalt.indexOf("{")));
 //			System.out.println(k1);
-			Knoten k = new Knoten(Integer.valueOf(k1));
+			Knoten k = g.getKnoten(kId);
+			if(k == null){
+				k = new Knoten(kId);
+			}
 			String verbindungen = fileInhalt.substring(fileInhalt.indexOf("{") + 1, fileInhalt.indexOf("}"));
 //			System.out.println(verbindungen);
 			if (verbindungen.length() > 0) {
 				String[] vb = verbindungen.split(",");
 				for (String s : vb) {
-					k.addKanteTo(new Knoten(Integer.valueOf(s)));
+					int zielKnotenId = Integer.valueOf(s);
+					Knoten zielKnoten = g.getKnoten(zielKnotenId);
+					if(zielKnoten == null){
+						zielKnoten = new Knoten(zielKnotenId);
+					}
+					k.addKanteTo(zielKnoten);
 				}
 			}
 			// Eingelesen Teil entfernen
@@ -106,9 +115,18 @@ public class Graph {
 	// creates a subgraph, that only includes nodes with ids greater than startKnoten
 	public static Graph createSubGraph(long startKnoten, Graph graph) {
 		Graph subGraph = graph.clone();
-		for (Knoten k : subGraph.getKnoten()) {
+		Iterator<Knoten> iterator = subGraph.getKnoten().iterator();
+		while(iterator.hasNext()) {
+			Knoten k = iterator.next();
+			Iterator<Knoten> neighborIterator = k.getVerbundeneKnoten().iterator();
 			if(k.getId() < startKnoten){
-				subGraph.remove(k);
+				iterator.remove();
+			}
+			while(neighborIterator.hasNext()) {
+				Knoten neighbor = neighborIterator.next();
+				if(neighbor.getId() < startKnoten){
+					neighborIterator.remove();
+				}
 			}
 		}
 		return subGraph;
