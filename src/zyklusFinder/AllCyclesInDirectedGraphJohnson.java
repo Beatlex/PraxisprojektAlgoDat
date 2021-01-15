@@ -32,8 +32,7 @@ public class AllCyclesInDirectedGraphJohnson {
 
         //stores nodes, that have been visited on the current path --> cannot be visited again = BLOCKED
         blockedSet = new HashSet<>();
-        //if a node n has no more unexplored neighbors and is not part of an existing cycle, n is added to the value set of all neighbors in the blockedMap
-        //blockedMap stores a "conditional" mapping of nodes --> if key is unblocked, the value has to be unblocked as well
+        //blockedMap stores a "conditional" mapping of nodes --> if "key node" is unblocked, the "value node" has to be unblocked as well
         blockedMap = new HashMap<>();
         stack = new LinkedList<>();
         allCycles = new ArrayList<>();
@@ -88,6 +87,7 @@ public class AllCyclesInDirectedGraphJohnson {
         return graphScc.getKnoten(minKnoten.getId());
     }
 
+    //this function recursively unblocks a node and all nodes that are dependent on it, as stored in blockedMap
     private void unblock(Knoten u) {
         blockedSet.remove(u);
         if(blockedMap.get(u) != null) {
@@ -100,16 +100,16 @@ public class AllCyclesInDirectedGraphJohnson {
         }
     }
 
-    private boolean findCyclesInSCG(
-            Knoten startKnoten,
-            Knoten currentKnoten) {
+    //core part of the Johnson's algorithm
+    private boolean findCyclesInSCG(Knoten startKnoten, Knoten currentKnoten) {
         boolean foundCycle = false;
         stack.push(currentKnoten);
         blockedSet.add(currentKnoten);
 
+        //explore neighbors of current node
         for (Knoten neighbor : currentKnoten.getVerbundeneKnoten()) {
-            //if neighbor is same as start node means cycle is found.
-            //Store contents of stack in final result.
+            //if the neighbor is the same as the start node, a cycle has been found.
+            //--> store the contents of stack in final result.
             if (neighbor == startKnoten) {
                 List<Knoten> cycle = new ArrayList<>();
                 stack.push(startKnoten);
@@ -118,20 +118,24 @@ public class AllCyclesInDirectedGraphJohnson {
                 stack.pop();
                 allCycles.add(cycle);
                 foundCycle = true;
-            } //explore this neighbor only if it is not in blockedSet.
+            } 
+            //explore this neighbor if it is not blocked
             else if (!blockedSet.contains(neighbor)) {
-                boolean gotCycle =
-                        findCyclesInSCG(startKnoten, neighbor);
-                foundCycle = foundCycle || gotCycle;
+                //enter the next "deeper" level of the DFS
+                //if the next recursion step has found a cycle, the current node is also on the path of the cycle.
+                foundCycle = findCyclesInSCG(startKnoten, neighbor);
             }
         }
-        //if cycle is found with current node then recursively unblock node and all vertices which are dependent on this node.
+        //at this point, all of the current nodes neighbors have been explored
+        //if cycle is found with current node then recursively unblock node and all nodes that are dependent on this node.
         if (foundCycle) {
-            //remove from blockedSet  and then remove all the other vertices dependent on this node from blockedSet
             unblock(currentKnoten);
         } else {
-            //if no cycle is found with current node then don't unblock it. But find all its neighbors and add this
-            //node to their blockedMap. If any of those neighbors ever get unblocked then unblock current node as well.
+            //if no cycle is found with current node then don't unblock it, but find all its neighbors and add this node to their blockedMap.
+            //Because none of the nodes neighbors have found a cycle either, there is no possibility of a cycle crossing the current node.
+            //However, if a neighbor is unblocked, the possibility of a new cycle through that neighbor appears, 
+            //so the current node has to be unblocked as well, since it leads to that neighbor
+            //To preserve that relation between the nodes, they are added to the blockedMap.
             for (Knoten k : currentKnoten.getVerbundeneKnoten()) {
                 if(!blockedMap.containsKey(k)){
                     blockedMap.put(k, new HashSet<>());
@@ -139,7 +143,7 @@ public class AllCyclesInDirectedGraphJohnson {
                 blockedMap.get(k).add(currentKnoten);
             }
         }
-        //remove node from the stack.
+        //remove node from the stack --> the current node is explored, go one step back "up" in the DFS
         stack.pop();
         return foundCycle;
     }
