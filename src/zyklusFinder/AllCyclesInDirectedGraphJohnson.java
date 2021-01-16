@@ -6,15 +6,16 @@ import model.Graph;
 import model.Knoten;
 
 /**
+ * Date 16.01.2021
+ * @author Lukas Schumann, Johannes Römisch
+ * 
+ * 
+ * Header comment of original github source code:
  * Date 11/16/2015
  * @author Tushar Roy
+ * https://github.com/mission-peace/interview/blob/master/src/com/interview/graph/AllCyclesInDirectedGraphJohnson.java
  *
  * Find all cycles in directed graph using Johnson's algorithm
- *
- * Time complexity - O(E + V).(c+1) where c is number of cycles found
- * Space complexity - O(E + V + s) where s is sum of length of all cycles.
- *
- * Link to youtube video - https://youtu.be/johyrWospv0
  *
  * References
  * https://github.com/jgrapht/jgrapht/blob/master/jgrapht-core/src/main/java/org/jgrapht/alg/cycle/JohnsonSimpleCycles.java
@@ -25,9 +26,7 @@ public class AllCyclesInDirectedGraphJohnson {
     Deque<Knoten> stack;
     List<List<Knoten>> allCycles;
 
-    /**
-     * Main function to find all simple cycles (each node only occurs once in a cycle)
-     */
+    //Main function to find all simple cycles (each node only occurs once in a cycle)
     public List<List<Knoten>> simpleCyles(Graph graph) {
 
         //stores nodes, that have been visited on the current path --> cannot be visited again = BLOCKED
@@ -45,15 +44,15 @@ public class AllCyclesInDirectedGraphJohnson {
             List<Set<Knoten>> sccs = tarjan.scc(subGraph);
             //create a graph containing only the scc that contains the node with the lowest index
             //get the node with the lowest index from that new graph
-            Knoten lowestKnoten = lowestIndexSCC(sccs, subGraph);
-            if(lowestKnoten == null) {
+            Knoten minKnoten = minIndexSCC(sccs, subGraph);
+            if(minKnoten == null) {
                 break;
             } else {
                 blockedSet.clear();
                 blockedMap.clear();
-                //start searching for cycles with the node with the lowest index
-                findCyclesInSCG(lowestKnoten, lowestKnoten);
-                startIndex = lowestKnoten.getId() + 1;
+                //start searching for cycles starting with the node with the lowest index
+                findCyclesInSCG(minKnoten, minKnoten);
+                startIndex = minKnoten.getId() + 1;
             }
         }
         return allCycles;
@@ -63,7 +62,7 @@ public class AllCyclesInDirectedGraphJohnson {
     //if the scc consists of only one node, it will be ignored
     //it then creates a graph that only consists of that strongly connected component
     //it then returns the node with the lowest index from that new graph.
-    private Knoten lowestIndexSCC(List<Set<Knoten>> sccs, Graph subGraph) {
+    private Knoten minIndexSCC(List<Set<Knoten>> sccs, Graph subGraph) {
         long min = Integer.MAX_VALUE;
         Knoten minKnoten = null;
         Set<Knoten> minScc = null;
@@ -110,7 +109,7 @@ public class AllCyclesInDirectedGraphJohnson {
         for (Knoten neighbor : currentKnoten.getVerbundeneKnoten()) {
             //if the neighbor is the same as the start node, a cycle has been found.
             //--> store the contents of stack in final result.
-            if (neighbor == startKnoten) {
+            if (neighbor.equals(startKnoten)) {
                 List<Knoten> cycle = new ArrayList<>();
                 stack.push(startKnoten);
                 cycle.addAll(stack);
@@ -134,7 +133,7 @@ public class AllCyclesInDirectedGraphJohnson {
             //if no cycle is found with current node then don't unblock it, but find all its neighbors and add this node to their blockedMap.
             //Because none of the nodes neighbors have found a cycle either, there is no possibility of a cycle crossing the current node.
             //However, if a neighbor is unblocked, the possibility of a new cycle through that neighbor appears, 
-            //so the current node has to be unblocked as well, since it leads to that neighbor
+            //so the current node has to be unblocked as well, since it leads to that neighbor.
             //To preserve that relation between the nodes, they are added to the blockedMap.
             for (Knoten k : currentKnoten.getVerbundeneKnoten()) {
                 if(!blockedMap.containsKey(k)){
@@ -143,7 +142,7 @@ public class AllCyclesInDirectedGraphJohnson {
                 blockedMap.get(k).add(currentKnoten);
             }
         }
-        //remove node from the stack --> the current node is explored, go one step back "up" in the DFS
+        //remove current node from the stack --> go one step back "up" in the DFS
         stack.pop();
         return foundCycle;
     }

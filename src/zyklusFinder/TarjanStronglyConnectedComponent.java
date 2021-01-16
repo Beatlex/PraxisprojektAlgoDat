@@ -6,16 +6,38 @@ import model.Graph;
 import model.Knoten;
 
 /**
+ * Date 16.01.2021
+ * @author Lukas Schumann, Johannes Römisch
+ * 
+ * Header comment of original github source code:
  * Date 08/16/2015
  * @author Tushar Roy
+ * https://github.com/mission-peace/interview/blob/master/src/com/interview/graph/TarjanStronglyConnectedComponent.java
  *
- * Find strongly connected components of directed graph.
+ * Find strongly connected components (sccs) of directed graph.
  *
- * Time complexity is O(E + V)
- * Space complexity  is O(V)
+ * The Algorithm:
+ * Each node has an index and a LowLink value.
+ * The LowLink value of a node describes its lowest reachable node index.
+ * 
+ * The Algorithm works by doing a DFS, tracking visited nodes in the 'visited' Set.
+ * The stack is tracking the visit order of the nodes, but once a strongly connected component is found, 
+ * all nodes belonging to that component are removed from the stack and stored in the result List.
+ * 
+ * If the DFS reaches a node n, that is marked as visited and that is on the stack, it means, 
+ * that n is reachable from the previous node p and p is also reachable from n, so they belong to the same scc and therefore have the same LowLink value.
+ * 
+ * If a node is already visited and NOT on the stack, it has to belong to a different scc and therefore has to be ignored.
+ * 
+ * Synopsis:
+ * Tarjan's Algorithm uses DFS and tracks the lowest reachable node index of every node.
+ * Each time all neighbors of an scc's root node (index == LowLink value) have been explored, the nodes on the stack, 
+ * from the top to the root node, are removed and stored as one scc.
+ * This is done until every node has been visited.
+ * 
  *
  * Reference - https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
- * Good Explanation of the Algorithm: https://www.youtube.com/watch?v=wUgWX0nc4NY
+ * Explanation of the Algorithm: https://www.youtube.com/watch?v=wUgWX0nc4NY
  */
 public class TarjanStronglyConnectedComponent {
 
@@ -64,8 +86,7 @@ public class TarjanStronglyConnectedComponent {
         stack.push(knoten);
 
         for (Knoten neighbor : knoten.getVerbundeneKnoten()) {
-            //if neighbor is not visited then visit it and see if it has link back to node's ancestor. In that case update
-            //lowLink to ancestor's index
+            //if neighbor is not visited then visit it and see if it has link back to node's ancestor. In that case update lowLink value to ancestor's index
             // --> DFS until a visited node is hit 
             if (!visited.contains(neighbor)) {
                 sccUtil(neighbor);
@@ -81,6 +102,7 @@ public class TarjanStronglyConnectedComponent {
         }
 
         //End of DFS:
+        //--> All neighbors have been explored
         //if nodes lowLink value is the same as index then this is the root node for a strongly connected component.
         //keep taking nodes off the stack until the current node is found. They are all part of one strongly connected component.
         if (indices.get(knoten) == lowLink.get(knoten)) {
